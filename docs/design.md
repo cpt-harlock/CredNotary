@@ -42,6 +42,8 @@ The two pointers are usually equal. `override_creds()` temporarily changes only 
 
 ## 2. When they change: the legitimate paths
 
+**Every legitimate privilege gain goes through an LSM hook that sees the exact cred before `commit_creds` installs it.** CredNotary is built on this fact. The paths below show where that hook sits.
+
 **`setuid()` and similar calls** (`kernel/sys.c`, for example `__sys_setresuid`):
 ```
 ns_capable_setid(CAP_SETUID)          <- needed only if the new uid is not
@@ -71,8 +73,6 @@ begin_new_exec():
 **`fork()`**: `copy_creds()` gives the child a copy of the parent's cred, with the same contents, made with `prepare_creds()` and installed directly, without `commit_creds`; only threads (`CLONE_THREAD`) share the same cred. The `task_alloc` hook runs after `copy_creds()`, while the child is being built.
 
 **`unshare(CLONE_NEWUSER)`**: creates a new cred in the new user namespace and installs it with `commit_creds`. Inside the namespace the process is "root", but its capabilities are valid only there: with respect to the initial namespace this is not a gain.
-
-**Every legitimate privilege gain goes through an LSM hook that sees the exact cred before `commit_creds` installs it.** CredNotary is built on this fact.
 
 ## 3. How attacks bypass the protocol
 

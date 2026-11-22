@@ -17,7 +17,7 @@ An attacker who holds a kernel memory-corruption primitive usually turns it into
 
 In `block`, `kill` and `quarantine` mode the first operation that would use the stolen privileges fails with `EPERM`, the task is killed, or it is frozen in a cgroup. The same checkpoints stop a compromised task from killing the loader or detaching the programs, and with `-P` the links stay pinned after the loader exits.
 
-[`docs/design.md`](docs/design.md) explains how the kernel changes credentials, how each attack bypasses that protocol, how the shadow, the tokens, the checkpoints and the sweep work, and what CredNotary does not cover.
+[`docs/design.md`](docs/design.md) explains how the kernel changes credentials, how each attack bypasses that protocol, how the shadow, the tokens, the checkpoints and the sweep work, and what CredNotary does not cover, with diagrams of the architecture and of each attack flow. A PDF version is in [`docs/design.pdf`](docs/design.pdf); `make docs` rebuilds it (needs node and npm).
 
 ## Requirements
 
@@ -144,8 +144,8 @@ testmod/    privsim lab module (lab VMs only)
 tests/      test suite and helpers (runas, privsim-test, suid-check, setfcap)
 bench/      microbenchmarks
 vm/         QEMU scripts: busybox VM, Debian VM, kernel build
-scripts/    build of libbpf and bpftool from the kernel tree
-docs/       design document
+scripts/    build of libbpf and bpftool from the kernel tree, PDF of the design document
+docs/       design document (Markdown and PDF)
 ```
 
 ## License

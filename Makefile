@@ -5,6 +5,7 @@
 #   make deps          libbpf and bpftool from the kernel tree (KSRC), once
 #   make               loader, compat variants, privsim, test helpers, benchmark
 #   make crednotary    loader only (build/crednotary)
+#   make docs          docs/design.pdf from docs/design.md (needs node and npm)
 #
 # KSRC is a configured and built kernel tree (default: ~/kernels/linux-7.3.1).
 KSRC     ?= $(HOME)/kernels/linux-7.3.1
@@ -93,10 +94,13 @@ bench: $(BUILD)/pgbench
 $(BUILD)/pgbench: bench/pgbench.c | $(BUILD)/obj
 	$(CC) -static -O2 -Wall $< -o $@
 
+docs:
+	scripts/design-pdf.sh
+
 clean:
 	rm -rf $(BUILD)/obj $(BUILD)/crednotary $(addprefix $(BUILD)/crednotary-,$(CN_VARIANTS)) \
 		$(BUILD)/runas $(BUILD)/privsim-test $(BUILD)/suid-check $(BUILD)/setfcap $(BUILD)/pgbench
 	$(MAKE) -C testmod KDIR=$(KSRC) clean
 
-.PHONY: all deps crednotary crednotary-compat testmod oldk-privsim helpers bench clean
+.PHONY: all deps crednotary crednotary-compat testmod oldk-privsim helpers bench docs clean
 .SECONDARY:
