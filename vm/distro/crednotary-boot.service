@@ -1,0 +1,14 @@
+# CredNotary in log mode from early boot: every event during the systemd boot
+# and the services is a potential false positive to examine.
+[Unit]
+Description=CredNotary (lab, log mode)
+DefaultDependencies=no
+After=systemd-remount-fs.service
+Before=sysinit.target
+
+[Service]
+Type=simple
+ExecStart=/bin/sh -c 'exec /usr/local/sbin/crednotary -m log -v > /var/log/crednotary-boot.log 2>&1'
+
+[Install]
+WantedBy=sysinit.target

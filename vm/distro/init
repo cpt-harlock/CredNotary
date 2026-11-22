@@ -1,0 +1,24 @@
+#!/bin/busybox sh
+# First stage for the Debian VM: mounts the distribution disk, installs
+# CredNotary and the lab units from the repository (9p), then hands over to
+# systemd.
+/bin/busybox --install -s /bin
+export PATH=/bin:/sbin
+mkdir -p /proc /sys /dev /newroot /host
+mount -t proc proc /proc
+mount -t sysfs sys /sys
+mount -t devtmpfs dev /dev
+mount -t 9p -o trans=virtio,version=9p2000.L,msize=512000 host /host
+mount -t ext4 /dev/vda1 /newroot || { echo "[distro-init] mounting /dev/vda1 failed"; exec sh; }
+
+U=/newroot/etc/systemd/system
+cp /host/build/crednotary /newroot/usr/local/sbin/crednotary
+cp /host/vm/distro/crednotary-boot.service /host/vm/distro/lab-run.service $U/
+mkdir -p $U/sysinit.target.wants $U/multi-user.target.wants
+ln -sf ../crednotary-boot.service $U/sysinit.target.wants/crednotary-boot.service
+ln -sf ../lab-run.service $U/multi-user.target.wants/lab-run.service
+echo "[distro-init] crednotary and units installed, switch_root"
+
+umount /host
+umount /proc /sys /dev 2>/dev/null
+exec switch_root /newroot /sbin/init

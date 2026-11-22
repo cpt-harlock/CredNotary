@@ -1,0 +1,13 @@
+# Runs the script given with run=<path relative to the repository> and powers the VM off.
+[Unit]
+Description=Lab script
+After=multi-user.target network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+StandardOutput=tty
+StandardError=tty
+TTYPath=/dev/ttyS0
+Environment=SYSTEMD_PAGER=cat PAGER=cat SYSTEMD_COLORS=0
+ExecStart=/bin/sh -c 'mkdir -p /mnt/host && mount -t 9p -o trans=virtio,version=9p2000.L,msize=512000 host /mnt/host && R=$(sed -n "s/.*run=\\([^ ]*\\).*/\\1/p" /proc/cmdline); if [ -n "$R" ]; then cd /mnt/host && sh "$R"; echo "=== RUN EXIT $? ==="; systemctl poweroff; fi'

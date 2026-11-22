@@ -1,0 +1,16 @@
+# build output: libbpf, bpftool, binaries, initramfs, VM disks
+/build/
+
+# lab module (kbuild)
+testmod/*.o
+testmod/*.ko
+testmod/*.mod
+testmod/*.mod.c
+testmod/.*.cmd
+testmod/Module.symvers
+testmod/modules.order
+
+# editors
+*.swp
+*.swo
+*~
